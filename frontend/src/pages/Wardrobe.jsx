@@ -7,6 +7,7 @@ import {
   updateItem,
   deleteItem,
 } from '../api/wardrobe.js';
+import { fetchImageAsObjectUrl } from '../api/client.js';
 
 const CATEGORIES = [
   { value: 'top', label: 'Oberteil' },
@@ -370,6 +371,58 @@ const STYLES = `
 }
 `;
 
+function AuthedImage({ imageUrl, alt, className, loading, fallback = null, ...rest }) {
+  const [objectUrl, setObjectUrl] = useState(null);
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    let url = null;
+
+    async function load() {
+      setFailed(false);
+      setObjectUrl(null);
+
+      if (!imageUrl) {
+        setFailed(true);
+        return;
+      }
+
+      try {
+        url = await fetchImageAsObjectUrl(imageUrl);
+        if (cancelled) {
+          URL.revokeObjectURL(url);
+          return;
+        }
+        setObjectUrl(url);
+      } catch {
+        if (!cancelled) setFailed(true);
+      }
+    }
+
+    load();
+
+    return () => {
+      cancelled = true;
+      if (url) URL.revokeObjectURL(url);
+    };
+  }, [imageUrl]);
+
+  if (failed || !objectUrl) {
+    return fallback;
+  }
+
+  return (
+    <img
+      src={objectUrl}
+      alt={alt}
+      className={className}
+      loading={loading}
+      {...rest}
+    />
+  );
+}
+
 export default function Wardrobe() {
   const { token, loading: authLoading } = useAuth();
   const navigate = useNavigate();
@@ -566,8 +619,6 @@ export default function Wardrobe() {
     );
   }
 
-  const currentPreview = preview || (editing ? editing.image_url : null);
-
   return (
     <section className="page">
       <style>{STYLES}</style>
@@ -641,18 +692,12 @@ export default function Wardrobe() {
           {filtered.map((item) => (
             <article key={item.id} className="wardrobe-card">
               <div className="wardrobe-card-img">
-                {item.image_url ? (
-                  <img
-                    src={item.image_url}
-                    alt={item.name}
-                    loading="lazy"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                    }}
-                  />
-                ) : (
-                  <span>Kein Bild</span>
-                )}
+                <AuthedImage
+                  imageUrl={item.image_url}
+                  alt={item.name}
+                  loading="lazy"
+                  fallback={<span>Kein Bild</span>}
+                />
               </div>
               <div className="wardrobe-card-body">
                 <p className="wardrobe-card-name">{item.name}</p>
@@ -780,11 +825,18 @@ export default function Wardrobe() {
                     accept="image/*"
                     onChange={handleFileChange}
                   />
-                  {currentPreview && (
+                  {preview && (
                     <img
                       className="file-preview"
-                      src={currentPreview}
+                      src={preview}
                       alt="Vorschau"
+                    />
+                  )}
+                  {!preview && editing && editing.image_url && (
+                    <AuthedImage
+                      imageUrl={editing.image_url}
+                      alt="Vorschau"
+                      className="file-preview"
                     />
                   )}
                   {editing && !file && (

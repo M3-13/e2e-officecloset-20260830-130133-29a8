@@ -8,7 +8,7 @@ import {
   updateOutfit,
   deleteOutfit,
 } from '../api/outfits.js';
-import apiClient from '../api/client.js';
+import { fetchImageAsObjectUrl, apiClient } from '../api/client.js';
 import './outfits.css';
 
 const CATEGORY_LABELS = {
@@ -19,9 +19,60 @@ const CATEGORY_LABELS = {
   accessory: 'Accessoire',
 };
 
+function AuthedImage({ imageUrl, alt, className, loading, fallback = null, ...rest }) {
+  const [objectUrl, setObjectUrl] = useState(null);
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    let url = null;
+
+    async function load() {
+      setFailed(false);
+      setObjectUrl(null);
+
+      if (!imageUrl) {
+        setFailed(true);
+        return;
+      }
+
+      try {
+        url = await fetchImageAsObjectUrl(imageUrl);
+        if (cancelled) {
+          URL.revokeObjectURL(url);
+          return;
+        }
+        setObjectUrl(url);
+      } catch {
+        if (!cancelled) setFailed(true);
+      }
+    }
+
+    load();
+
+    return () => {
+      cancelled = true;
+      if (url) URL.revokeObjectURL(url);
+    };
+  }, [imageUrl]);
+
+  if (failed || !objectUrl) {
+    return fallback;
+  }
+
+  return (
+    <img
+      src={objectUrl}
+      alt={alt}
+      className={className}
+      loading={loading}
+      {...rest}
+    />
+  );
+}
+
 export default function Outfits() {
   const { token, loading: authLoading } = useAuth();
-
   const [items, setItems] = useState([]);
   const [outfits, setOutfits] = useState([]);
 
@@ -240,15 +291,12 @@ export default function Outfits() {
                           aria-pressed={selected}
                           disabled={saving}
                         >
-                          {item.image_url ? (
-                            <img
-                              className="item-image"
-                              src={item.image_url}
-                              alt={item.name}
-                            />
-                          ) : (
-                            <div className="item-image item-image-placeholder" />
-                          )}
+                          <AuthedImage
+                            imageUrl={item.image_url}
+                            alt={item.name}
+                            className="item-image"
+                            fallback={<div className="item-image item-image-placeholder" />}
+                          />
                           <span className="item-name">{item.name}</span>
                           <span className="item-category">
                             {CATEGORY_LABELS[item.category] || item.category}
@@ -267,13 +315,11 @@ export default function Outfits() {
                 <ul className="selection-list">
                   {selectedItems.map((item) => (
                     <li key={item.id}>
-                      {item.image_url ? (
-                        <img
-                          className="selection-thumb"
-                          src={item.image_url}
-                          alt={item.name}
-                        />
-                      ) : null}
+                      <AuthedImage
+                        imageUrl={item.image_url}
+                        alt={item.name}
+                        className="selection-thumb"
+                      />
                       {item.name}
                     </li>
                   ))}
@@ -346,16 +392,14 @@ export default function Outfits() {
                       {outfit.items.length === 1 ? 'Teil' : 'Teile'}
                     </p>
                     <div className="outfit-thumbs">
-                      {outfit.items.slice(0, 5).map((item) =>
-                        item.image_url ? (
-                          <img
-                            key={item.id}
-                            className="outfit-thumb"
-                            src={item.image_url}
-                            alt={item.name}
-                          />
-                        ) : null,
-                      )}
+                      {outfit.items.slice(0, 5).map((item) => (
+                        <AuthedImage
+                          key={item.id}
+                          imageUrl={item.image_url}
+                          alt={item.name}
+                          className="outfit-thumb"
+                        />
+                      ))}
                     </div>
                   </div>
                   <div className="outfit-card-actions">
@@ -415,15 +459,12 @@ export default function Outfits() {
               <ul className="detail-items">
                 {detail.items.map((item) => (
                   <li key={item.id} className="detail-item">
-                    {item.image_url ? (
-                      <img
-                        className="detail-image"
-                        src={item.image_url}
-                        alt={item.name}
-                      />
-                    ) : (
-                      <div className="detail-image detail-image-placeholder" />
-                    )}
+                    <AuthedImage
+                      imageUrl={item.image_url}
+                      alt={item.name}
+                      className="detail-image"
+                      fallback={<div className="detail-image detail-image-placeholder" />}
+                    />
                     <div className="detail-meta">
                       <strong>{item.name}</strong>
                       <span className="muted">
