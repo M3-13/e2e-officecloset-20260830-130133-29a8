@@ -1,0 +1,123 @@
+.auth-card {
+  max-width: 480px;
+  margin: var(--space-4) auto;
+  padding: var(--space-4);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.form-label {
+  font-size: 14px;
+  color: var(--color-fg);
+}
+
+.form-input {
+  min-height: 44px;
+  padding: 10px 14px;
+  background-color: var(--color-surface_raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-fg);
+  font-size: 16px;
+  transition: border-color 120ms, box-shadow 120ms;
+}
+
+.form-input::placeholder {
+  color: var(--color-muted);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.18);
+}
+
+.form-input.invalid {
+  border-color: var(--color-danger);
+}
+
+.form-field-error {
+  font-size: 14px;
+  color: var(--color-danger);
+  margin: 0;
+}
+
+.alert {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+}
+
+.alert-error {
+  background-color: var(--color-surface_raised);
+  border-left: 3px solid var(--color-danger);
+  color: var(--color-danger);
+}
+
+.alert-success {
+  background-color: var(--color-surface_raised);
+  border-left: 3px solid var(--color-success);
+  color: var(--color-success);
+}
+
+.button {
+  min-height: 44px;
+  padding: 12px 24px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 120ms, border-color 120ms, color 120ms,
+    transform 120ms;
+}
+
+.button-primary {
+  background-color: var(--color-accent);
+  color: #161211;
+  border: 1px solid var(--color-accent);
+}
+
+.button-primary:hover {
+  background-color: var(--color-accent_hover);
+  border-color: var(--color-accent_hover);
+}
+
+.button-primary:active {
+  background-color: var(--color-accent_active);
+  border-color: var(--color-accent_active);
+  transform: translateY(1px);
+}
+
+.button-primary:disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.auth-links {
+  margin-top: var(--space-3);
+  font-size: 14px;
+  color: var(--color-muted);
+  text-align: center;
+}
+
+.auth-links a {
+  color: var(--color-accent);
+}
+
+.auth-links a:hover {
+  color: var(--color-accent_hover);
+}

@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate, NavLink, Link } from 'react-router-dom';
+import { RequireAuth } from './context/AuthContext.jsx';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
 import Wardrobe from './pages/Wardrobe.jsx';
@@ -84,9 +85,30 @@ function Layout() {
             <Route path="/" element={<Navigate to="/wardrobe" replace />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/wardrobe" element={<Wardrobe />} />
-            <Route path="/outfits" element={<Outfits />} />
-            <Route path="/settings" element={<Settings />} />
+            <Route
+              path="/wardrobe"
+              element={
+                <RequireAuth>
+                  <Wardrobe />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/outfits"
+              element={
+                <RequireAuth>
+                  <Outfits />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <RequireAuth>
+                  <Settings />
+                </RequireAuth>
+              }
+            />
             <Route path="/impressum" element={<Imprint />} />
             <Route path="/datenschutz" element={<Privacy />} />
             <Route path="*" element={<Navigate to="/wardrobe" replace />} />
