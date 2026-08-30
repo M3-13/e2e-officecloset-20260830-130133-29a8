@@ -1,19 +1,34 @@
+import apiClient from './client.js';
+
+const BASE = '/api/wardrobe/items';
+
+function buildQuery(params) {
+  const search = new URLSearchParams();
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      search.append(key, value);
+    }
+  });
+  const qs = search.toString();
+  return qs ? `?${qs}` : '';
+}
+
 export async function listItems(params = {}) {
-  throw new Error('listItems not implemented');
+  return apiClient.get(`${BASE}${buildQuery(params)}`);
 }
 
 export async function createItem(formData) {
-  throw new Error('createItem not implemented');
+  return apiClient.post(BASE, formData);
 }
 
 export async function getItem(id) {
-  throw new Error('getItem not implemented');
+  return apiClient.get(`${BASE}/${id}`);
 }
 
 export async function updateItem(id, formData) {
-  throw new Error('updateItem not implemented');
+  return apiClient.put(`${BASE}/${id}`, formData);
 }
 
 export async function deleteItem(id) {
-  throw new Error('deleteItem not implemented');
+  return apiClient.delete(`${BASE}/${id}`);
 }
