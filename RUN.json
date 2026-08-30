@@ -43,6 +43,9 @@
         "UPLOAD_DIR": {
           "dev": "uploads"
         },
+        "AUTH_RATE_LIMIT": {
+          "dev": "200"
+        },
         "JWT_SECRET": {
           "generate": "hex",
           "bytes": 32

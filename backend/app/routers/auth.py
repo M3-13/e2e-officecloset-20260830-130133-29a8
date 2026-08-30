@@ -1,3 +1,4 @@
+import os
 import time
 from collections import defaultdict, deque
 
@@ -12,8 +13,8 @@ from ..security import create_access_token
 
 router = APIRouter()
 
-AUTH_RATE_LIMIT = 5
-AUTH_RATE_WINDOW_SECONDS = 60
+AUTH_RATE_LIMIT = int(os.environ.get("AUTH_RATE_LIMIT", "5"))
+AUTH_RATE_WINDOW_SECONDS = int(os.environ.get("AUTH_RATE_WINDOW_SECONDS", "60"))
 
 _request_times: dict[str, deque[float]] = defaultdict(deque)
 
