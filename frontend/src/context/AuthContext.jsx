@@ -1,8 +1,9 @@
 import { createContext, useContext, useEffect, useState } from 'react';
+import { Navigate } from 'react-router-dom';
+import * as authApi from '../api/auth.js';
+import { getToken, setToken as persistToken } from '../api/client.js';
 
 const AuthContext = createContext(null);
-
-const TOKEN_KEY = 'token';
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -10,23 +11,33 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const stored = localStorage.getItem(TOKEN_KEY);
+    const stored = getToken();
     if (stored) {
       setToken(stored);
     }
     setLoading(false);
   }, []);
 
-  const login = () => {
-    throw new Error('login not implemented');
+  const login = async ({ email, password }) => {
+    const data = await authApi.login({ email, password });
+    persistToken(data.access_token);
+    setToken(data.access_token);
+    setUser({ email });
+    return data;
   };
 
-  const register = () => {
-    throw new Error('register not implemented');
+  const register = async ({ email, password }) => {
+    const data = await authApi.register({ email, password });
+    persistToken(data.access_token);
+    setToken(data.access_token);
+    setUser({ email });
+    return data;
   };
 
   const logout = () => {
-    throw new Error('logout not implemented');
+    persistToken(null);
+    setToken(null);
+    setUser(null);
   };
 
   return (
@@ -42,4 +53,15 @@ export function useAuth() {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
+}
+
+export function RequireAuth({ children }) {
+  const { token, loading } = useAuth();
+  if (loading) {
+    return null;
+  }
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
 }
