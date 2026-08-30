@@ -1,3 +1,5 @@
+import { apiClient } from './client.js';
+
 export async function deleteAccount() {
-  throw new Error('deleteAccount not implemented');
+  return apiClient.delete('/api/users/me');
 }
