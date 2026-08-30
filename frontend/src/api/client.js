@@ -46,6 +46,25 @@ async function request(path, options = {}) {
   return data;
 }
 
+export async function fetchImageAsObjectUrl(path) {
+  const headers = new Headers();
+  const token = getToken();
+  if (token) {
+    headers.set('Authorization', `Bearer ${token}`);
+  }
+
+  const response = await fetch(path, { headers });
+
+  if (!response.ok) {
+    const error = new Error(`Request failed with status ${response.status}`);
+    error.status = response.status;
+    throw error;
+  }
+
+  const blob = await response.blob();
+  return URL.createObjectURL(blob);
+}
+
 export const apiClient = {
   get: (path, options) => request(path, { ...options, method: 'GET' }),
   post: (path, body, options) =>
