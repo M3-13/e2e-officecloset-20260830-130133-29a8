@@ -1,19 +1,25 @@
+import apiClient from './client.js';
+
 export async function listOutfits() {
-  throw new Error('listOutfits not implemented');
+  return apiClient.get('/api/outfits');
 }
 
 export async function createOutfit({ name, item_ids }) {
-  throw new Error('createOutfit not implemented');
+  return apiClient.post('/api/outfits', JSON.stringify({ name, item_ids }), {
+    headers: { 'Content-Type': 'application/json' },
+  });
 }
 
 export async function getOutfit(id) {
-  throw new Error('getOutfit not implemented');
+  return apiClient.get(`/api/outfits/${id}`);
 }
 
 export async function updateOutfit(id, { name, item_ids }) {
-  throw new Error('updateOutfit not implemented');
+  return apiClient.put(`/api/outfits/${id}`, JSON.stringify({ name, item_ids }), {
+    headers: { 'Content-Type': 'application/json' },
+  });
 }
 
 export async function deleteOutfit(id) {
-  throw new Error('deleteOutfit not implemented');
+  return apiClient.delete(`/api/outfits/${id}`);
 }
