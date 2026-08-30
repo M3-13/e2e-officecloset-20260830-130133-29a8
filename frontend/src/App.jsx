@@ -40,6 +40,16 @@ function Navbar() {
               Einstellungen
             </NavLink>
           </li>
+          <li>
+            <NavLink to="/impressum" className={({ isActive }) => (isActive ? 'active' : '')}>
+              Impressum
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/datenschutz" className={({ isActive }) => (isActive ? 'active' : '')}>
+              Datenschutz
+            </NavLink>
+          </li>
         </ul>
       </div>
     </nav>
