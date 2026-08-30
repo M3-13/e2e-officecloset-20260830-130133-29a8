@@ -1,15 +1,16 @@
 from pathlib import Path
 
 import pytest
-from app.db import Base, get_db
-from app.main import app
-from app.models import ClothingItem, Outfit, OutfitItem, User
-from app.security import get_current_user
 from fastapi import Depends
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
+
+from app.db import Base, get_db
+from app.main import app
+from app.models import ClothingItem, Outfit, OutfitItem, User
+from app.security import get_current_user
 
 TARGET_EMAIL = "anna@example.com"
 
